@@ -28,6 +28,13 @@ var editAttributeFieldAttachment = sui.views.editAttributeField.extend( {
 			ids = ids.split(', '),		
 			nonCached = [];
 
+		if ( this.model.get( 'url_only' ) ) {
+			jQuery.each( ids, function(index, url) {
+				self._renderPreview( url );
+			});
+			return;
+		}
+
 		jQuery.each( ids, function(index, id) {
 
 			if ( editAttributeFieldAttachment.getFromCache( id ) ) {
@@ -111,39 +118,55 @@ var editAttributeFieldAttachment = sui.views.editAttributeField.extend( {
 			$thumbnailPreviewContainer = $node.find('.shortcake-attachment-preview'),
 			$thumbnail = jQuery('<div class="thumbnail"></div>');
 
-		if ( 'image' !== attachment.type ) {
+		// Progress basic url
+		if ( this.model.get( 'url_only' ) ) {
 
 			jQuery( '<img/>', {
-				src: attachment.icon,
-				alt: attachment.title,
-			} ).appendTo( $thumbnail );
+				src: attachment,
+			} ).appendTo( $thumbnail );	
+					
+		} else {	
 
-			jQuery( '<div/>', {
-				class: 'filename',
-				html:  '<div>' + attachment.title + '</div>',
-			} ).appendTo( $thumbnail );
+			if ( 'image' !== attachment.type ) {
 
-		} else {
+				jQuery( '<img/>', {
+					src: attachment.icon,
+					alt: attachment.title,
+				} ).appendTo( $thumbnail );
 
-			attachmentThumb = (typeof attachment.sizes.thumbnail !== 'undefined') ?
-				attachment.sizes.thumbnail :
-				_.first( _.sortBy( attachment.sizes, 'width' ) );
+				jQuery( '<div/>', {
+					class: 'filename',
+					html:  '<div>' + attachment.title + '</div>',
+				} ).appendTo( $thumbnail );
 
-			jQuery( '<img/>', {
-				src:    attachmentThumb.url,
-				width:  attachmentThumb.width,
-				height: attachmentThumb.height,
-				alt:    attachment.alt,
-			} ) .appendTo( $thumbnail )
+			} else {
 
-		}
+				attachmentThumb = (typeof attachment.sizes.thumbnail !== 'undefined') ?
+					attachment.sizes.thumbnail :
+					_.first( _.sortBy( attachment.sizes, 'width' ) );
+
+				jQuery( '<img/>', {
+					src:    attachmentThumb.url,
+					width:  attachmentThumb.width,
+					height: attachmentThumb.height,
+					alt:    attachment.alt,
+				} ) .appendTo( $thumbnail )
+
+			}
+
+		}	
 
 		$thumbnail.find( 'img' ).wrap( '<div class="centered"></div>' );
 
 		$thumbnailPreviewContainer.append($thumbnail);
 		$thumbnailPreviewContainer.toggleClass( 'has-attachment', true );		
 
-		$node.attr('data-attachment-id', attachment.id);
+		if ( this.model.get( 'url_only' ) ) {
+			$node.attr('data-attachment', attachment);
+		} else {
+			$node.attr('data-attachment', attachment.id);
+		}		
+
 		$node.toggleClass( 'has-attachment', true );
 
 		this.$container.prepend( $node );
@@ -168,12 +191,18 @@ var editAttributeFieldAttachment = sui.views.editAttributeField.extend( {
 	 * When an attachment is selected from the media frame, update the model value.
 	 */
 	_selectAttachment: function(e) {
-		var selection = this.frame.state().get('selection');
-		var selected  = null;
+		var self = this,
+			selection = this.frame.state().get('selection'),
+			selected  = null;
 
 		if ( ! this.model.get( 'multiple' ) ) {
-			selected = selection.first().get('id');
-			selected = selected.toString();
+			// determine to return ID or url
+			if ( ! this.model.get( 'url_only' ) ) {
+				selected = selection.first().get('id');
+				selected = selected.toString();
+			} else {
+				selected = selection.first().get('url');
+			}
 			// hide upload button
 			this.$uploader.detach();
 		} else {
@@ -182,7 +211,12 @@ var editAttributeFieldAttachment = sui.views.editAttributeField.extend( {
 
 			selection.map( function( attachment ) {
 			    attachment = attachment.toJSON();
-			    selected.push(attachment.id);
+			    console.log(attachment);
+			    if ( ! self.model.get( 'url_only' ) ) {
+			    	selected.push(attachment.id);
+			    } else {
+			    	selected.push(attachment.url);
+			    }
 			});	
 
 			selected = selected.join(', ');
@@ -210,17 +244,17 @@ var editAttributeFieldAttachment = sui.views.editAttributeField.extend( {
 		e.preventDefault();
 
 		var $attachment = jQuery(e.target).parents('li.attachment'),
-		    $id = $attachment.attr('data-attachment-id');
-			$attachmentIds = this.model.get( 'value' ).split(', ');
+		    $id = $attachment.attr('data-attachment');
+			$attachments = this.model.get( 'value' ).split(', ');
 
-		index = $attachmentIds.indexOf($id);
+		index = $attachments.indexOf($id);
 
 		if (index > -1) {
-		    $attachmentIds.splice(index, 1);
+		    $attachments.splice(index, 1);
 		}
 
-		if ( $attachmentIds.length > 0 ) {
-			this.setValue( $attachmentIds.join(', ') );
+		if ( $attachments.length > 0 ) {
+			this.setValue( $attachments.join(', ') );
 		} else {
 			this.model.set( 'value', null );
 		}
