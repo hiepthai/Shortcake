@@ -17,10 +17,14 @@
 		display: none;
 	}
 
+	.thumbnail img {
+		max-width: 150px;
+	}
+
 	.thumbnail:hover:after { 
 		background: rgba(0,0,0,0.1);
 		transition: all .3s linear;
-	 }
+	}
 
 	&:not( .has-attachment ) {
 		border: 2px dashed #DDD;

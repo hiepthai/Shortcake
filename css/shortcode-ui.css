@@ -111,6 +111,8 @@
   padding: 0; }
   .edit-shortcode-form .shortcake-attachment-preview:before {
     display: none; }
+  .edit-shortcode-form .shortcake-attachment-preview .thumbnail img {
+    max-width: 150px; }
   .edit-shortcode-form .shortcake-attachment-preview .thumbnail:hover:after {
     background: rgba(0, 0, 0, 0.1);
     transition: all .3s linear; }
