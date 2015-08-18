@@ -635,7 +635,7 @@ var editAttributeFieldAttachment = sui.views.editAttributeField.extend( {
 		this.setValue( ids );
 
 		var self = this,
-			ids = ids.split(', '),		
+			ids = ids.replace(/ /g,'').split(','),		
 			nonCached = [];
 
 		if ( this.model.get( 'url_only' ) ) {
@@ -817,7 +817,7 @@ var editAttributeFieldAttachment = sui.views.editAttributeField.extend( {
 			this.$uploader.detach();
 		} else {
 			current  = this.model.get( 'value' );
-			selected = (current) ? current.split(', ') : [];
+			selected = (current) ? current.replace(/ /g,'').split(',') : [];
 
 			selection.map( function( attachment ) {
 			    attachment = attachment.toJSON();
@@ -855,7 +855,7 @@ var editAttributeFieldAttachment = sui.views.editAttributeField.extend( {
 
 		var $attachment = jQuery(e.target).parents('li.attachment'),
 		    $id = $attachment.attr('data-attachment');
-			$attachments = this.model.get( 'value' ).split(', ');
+			$attachmentIds = this.model.get( 'value' ).replace(/ /g,'').split(',');
 
 		index = $attachments.indexOf($id);
 
@@ -864,7 +864,7 @@ var editAttributeFieldAttachment = sui.views.editAttributeField.extend( {
 		}
 
 		if ( $attachments.length > 0 ) {
-			this.setValue( $attachments.join(', ') );
+			this.setValue( $attachmentIds.join(',') );
 		} else {
 			this.model.set( 'value', null );
 		}
