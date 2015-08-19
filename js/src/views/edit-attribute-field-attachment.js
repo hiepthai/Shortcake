@@ -247,7 +247,7 @@ var editAttributeFieldAttachment = sui.views.editAttributeField.extend( {
 
 		var $attachment = jQuery(e.target).parents('li.attachment'),
 		    $id = $attachment.attr('data-attachment');
-			$attachmentIds = this.model.get( 'value' ).replace(/ /g,'').split(',');
+			$attachments = this.model.get( 'value' ).replace(/ /g,'').split(',');
 
 		index = $attachments.indexOf($id);
 
@@ -256,7 +256,7 @@ var editAttributeFieldAttachment = sui.views.editAttributeField.extend( {
 		}
 
 		if ( $attachments.length > 0 ) {
-			this.setValue( $attachmentIds.join(',') );
+			this.setValue( $attachments.join(',') );
 		} else {
 			this.model.set( 'value', null );
 		}
