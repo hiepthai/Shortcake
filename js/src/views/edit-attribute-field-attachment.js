@@ -28,7 +28,7 @@ var editAttributeFieldAttachment = sui.views.editAttributeField.extend( {
 			ids = ids.replace(/ /g,'').split(','),		
 			nonCached = [];
 
-		if ( this.model.get( 'url_only' ) ) {
+		if ( this.url_mode ) {
 			jQuery.each( ids, function(index, url) {
 				self._renderPreview( url );
 			});
@@ -90,6 +90,8 @@ var editAttributeFieldAttachment = sui.views.editAttributeField.extend( {
 
 		this.$container = this.$el.find( '.shortcake-attachments' );
 		this.$uploader = this.$container.find( 'li.attachment:not(.has-attachment)' );
+		this.url_mode = ( this.model.get( 'value' ).match(/[a-z]/i) ) ? true : false;
+
 		var $addButton = this.$container.find( 'button.add' );
 
 		this.frame = wp.media( {
@@ -119,7 +121,7 @@ var editAttributeFieldAttachment = sui.views.editAttributeField.extend( {
 			$thumbnail = jQuery('<div class="thumbnail"></div>');
 
 		// Progress basic url
-		if ( this.model.get( 'url_only' ) ) {
+		if ( this.url_mode ) {
 
 			jQuery( '<img/>', {
 				src: attachment,
@@ -161,7 +163,7 @@ var editAttributeFieldAttachment = sui.views.editAttributeField.extend( {
 		$thumbnailPreviewContainer.append($thumbnail);
 		$thumbnailPreviewContainer.toggleClass( 'has-attachment', true );		
 
-		if ( this.model.get( 'url_only' ) ) {
+		if ( this.url_mode ) {
 			$node.attr('data-attachment', attachment);
 		} else {
 			$node.attr('data-attachment', attachment.id);
@@ -197,7 +199,7 @@ var editAttributeFieldAttachment = sui.views.editAttributeField.extend( {
 
 		if ( ! this.model.get( 'multiple' ) ) {
 			// determine to return ID or url
-			if ( ! this.model.get( 'url_only' ) ) {
+			if ( ! this.url_mode ) {
 				selected = selection.first().get('id');
 				selected = selected.toString();
 			} else {
