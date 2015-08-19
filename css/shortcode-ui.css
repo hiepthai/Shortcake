@@ -112,7 +112,9 @@
   .edit-shortcode-form .shortcake-attachment-preview:before {
     display: none; }
   .edit-shortcode-form .shortcake-attachment-preview .thumbnail img {
-    max-width: 150px; }
+    max-width: 150px;
+    width: auto !important;
+    height: auto !important; }
   .edit-shortcode-form .shortcake-attachment-preview .thumbnail:hover:after {
     background: rgba(0, 0, 0, 0.1);
     transition: all .3s linear; }
